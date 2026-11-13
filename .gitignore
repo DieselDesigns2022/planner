@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.coverage
+node_modules/
+test-results/
+.env
+*.sqlite3*

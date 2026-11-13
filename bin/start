@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+umask 077
+cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.."
+if [[ -z "${PLANNER_PASSWORD:-}" && -z "${PLANNER_PASSWORD_FILE:-}" ]]; then
+  export PLANNER_PASSWORD_FILE=/workspace/private/planner/password
+  python - <<'PY'
+import os,secrets
+from pathlib import Path
+p=Path(os.environ['PLANNER_PASSWORD_FILE']);p.parent.mkdir(parents=True,exist_ok=True)
+try:
+    fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+except FileExistsError:
+    pass
+else:
+    with os.fdopen(fd,'w') as f: f.write(secrets.token_urlsafe(24)+'\n')
+PY
+fi
+exec python -m planner.server --host "${PLANNER_HOST:-127.0.0.1}" --port "${PLANNER_PORT:-8000}" "$@"

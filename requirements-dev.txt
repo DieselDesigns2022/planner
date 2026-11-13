@@ -1,0 +1,3 @@
+# Application runtime uses only Python's standard library.
+# Browser acceptance tests also need Chromium (already available in this cloud).
+playwright==1.62.0
